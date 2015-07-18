@@ -30,16 +30,30 @@ var server = http.createServer(function(req, res){
                         break;
                 }
 
-                database.base.aggregate( {$unwind : "$programme"},     arg1,    {$group : { "_id" : "$_id" , "programme" : { $push: "$programme" } } }, function(something, docs){
-                    if(docs == ""){
-                        res.writeHead(404);
-                        res.end('{ "error":"not found", "type":"' + post.request_type + '" }');
-                    }
-                    else{
-                        res.writeHead(200);
-                        res.end(JSON.stringify(docs[0]));
-                    }
-                });
+                if(post.request_type != "all_channels"){
+                    database.base.aggregate( {$unwind : "$programme"},     arg1,    {$group : { "_id" : "$_id" , "programme" : { $push: "$programme" } } }, function(something, docs){
+                        if(docs == ""){
+                            res.writeHead(404);
+                            res.end('{ "error":"not found", "type":"' + post.request_type + '", "name":"' + post.request_name + '" }');
+                        }
+                        else{
+                            res.writeHead(200);
+                            res.end(JSON.stringify(docs[0]));
+                        }
+                    });
+                }
+                else{
+                    database.base.aggregate({$unwind : "$channel"},     {$match : { } },    {$group : { "_id" : "$_id" , "channel" : { $push: "$channel" } } }, function(something, docs){
+                        if(docs == ""){
+                            res.writeHead(404);
+                            res.end('{ "error":"not found", "type":"all_channels" }');
+                        }
+                        else{
+                            res.writeHead(200);
+                            res.end(JSON.stringify(docs[0]));
+                        }
+                    });
+                }
             }
             else{
                 console.log("Searching for channels...");

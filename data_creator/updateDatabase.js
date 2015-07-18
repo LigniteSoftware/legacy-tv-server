@@ -71,7 +71,7 @@ var server = http.createServer(function(req, res){
             var allText = data;
             done = true;
 
-            var rstring = replaceAll(".labs.zap2it.com", "", replaceAll("@attributes", "attributes", replaceAll('"previously-shown":{}', '"new":false', replaceAll('"new":{}', '"new":true', allText))));
+            var rstring = replaceAll("display-name", "display_name", replaceAll(".labs.zap2it.com", "", replaceAll("@attributes", "attributes", replaceAll('"previously-shown":{}', '"new":false', replaceAll('"new":{}', '"new":true', allText)))));
             var objects = getValues(JSON.parse(rstring), "new");
             var pcount = 0, ncount = 0;
             for(var i = 0; i < objects.length; i++){ if(objects[i]){ pcount++; }else{ ncount++; } }
@@ -87,6 +87,8 @@ var server = http.createServer(function(req, res){
                     console.log("not ok");
                     res.writeHead(404);
                     res.end('{ "error":"not found" }');
+                    console.log("hello crash");
+                    console.log(hello);
                 }
                 else{
                     res.writeHead(200);

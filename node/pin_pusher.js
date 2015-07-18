@@ -15,10 +15,6 @@ var timeline = new Timeline({
   apiKey: 'SBz0h725s5b3nrumo3jf4tfez3dr7i57'
 });
 
-var showLocation = "NBC";
-var showTitle = "Chuck: S02E01";
-var edgyTopics = ["chuck"];
-
 function replaceAll(find, replace, str) {
     return str.replace(new RegExp(find, 'g'), replace);
 }
@@ -71,6 +67,7 @@ database.base.aggregate({$unwind : "$programme"},     {$match : {  } },    {$gro
 });
 
 function pushNextShow(){
+
     var d = new Date();
     startTime = d.getTime();
     if(currentShow < 5){
@@ -103,23 +100,18 @@ function pushShow(currentShow){
         title: title,
       }
   };
-  var jsonString = JSON.stringify(jsonPin);
-  var jsonPinFinal = JSON.parse(jsonString);
-  console.log("Pin: " + jsonString + " and object " + jsonPinFinal);
-
   var pin = new Timeline.Pin(jsonPin);
 
-  // send the pin
-  timeline.sendSharedPin(edgyTopics, pin, function (err, body, resp) {
+  var topic = [title];
+  timeline.sendSharedPin(topic, pin, function (err, body, resp) {
     if (err) {
         pushNextShow();
         console.log(body);
-      return console.error(err);
+        return console.error(err);
     }
     var d = new Date();
     var endTime = d.getTime();
     console.log("Completed in " + (endTime-startTime) + " milliseconds.");
-    //res.send('Status code: ' + resp.statusCode);
     pushNextShow();
   });
 }
@@ -127,6 +119,7 @@ function pushShow(currentShow){
 /*
  * Depreciated shit I don't want to lose
  * rip in spret wins
+ *
 // start the webserver
 var server = app.listen(app.get('port'), function () {
   console.log('PinPusher listening on port %s', app.get('port'));
