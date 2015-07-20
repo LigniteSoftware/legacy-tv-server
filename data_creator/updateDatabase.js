@@ -5,7 +5,6 @@ var Timeline = require('pebble-api');
 var mongo = require('mongojs');
 var fs = require('fs');
 
-var server = http.createServer(function(req, res){
     var done = false;
     function getObjects(obj, key, val) {
         var objects = [];
@@ -79,6 +78,7 @@ var server = http.createServer(function(req, res){
 
             var database = mongo('tv', ['base']);
 
+            database.base.remove({});
             console.log("parsed");
             database.base.insert(JSON.parse(rstring));
 
@@ -98,6 +98,3 @@ var server = http.createServer(function(req, res){
         });
     }
     readTextFile("");
-});
-
-server.listen(8080);
