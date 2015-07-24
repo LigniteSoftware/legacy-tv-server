@@ -1,0 +1,19 @@
+{
+  "name": "TV",
+  "version": "0.1.0",
+  "description": "Sends tv pins to the user",
+  "main": "test.js",
+  "scripts": {
+    "start": "node test.js"
+  },
+  "dependencies": {
+    "express": "^4.0.0",
+    "pebble-api": "^0.0.2",
+    "randomstring": "^1.0.0",
+    "request": "^2.53.0"
+  },
+  "engines": {
+    "node": "0.10.x"
+  },
+  "license": "MIT"
+}

@@ -70,7 +70,7 @@ var fs = require('fs');
             var allText = data;
             done = true;
 
-            var rstring = replaceAll("display-name", "display_name", replaceAll(".labs.zap2it.com", "", replaceAll("@attributes", "attributes", replaceAll('"previously-shown":{}', '"new":false', replaceAll('"new":{}', '"new":true', allText)))));
+            var rstring = replaceAll("episode-name", "episode_name", replaceAll("display-name", "display_name", replaceAll(".labs.zap2it.com", "", replaceAll("@attributes", "attributes", replaceAll('"previously-shown":{}', '"new":false', replaceAll('"new":{}', '"new":true', allText))))));
             var objects = getValues(JSON.parse(rstring), "new");
             var pcount = 0, ncount = 0;
             for(var i = 0; i < objects.length; i++){ if(objects[i]){ pcount++; }else{ ncount++; } }
@@ -78,22 +78,14 @@ var fs = require('fs');
 
             var database = mongo('tv', ['base']);
 
-            database.base.remove({});
+            database.base.remove({}, function(error, whatever){ if(error) { console.log(error) } });
             console.log("parsed");
-            database.base.insert(JSON.parse(rstring));
-
-            database.base.find({}, function(something, docs){
-                if(docs == ""){
-                    console.log("not ok");
-                    res.writeHead(404);
-                    res.end('{ "error":"not found" }');
-                    console.log("hello crash");
-                    console.log(hello);
-                }
-                else{
-                    res.writeHead(200);
-                    res.end(JSON.stringify(docs[0]));
-                }
+            database.base.insert(JSON.parse(rstring), function(error){ if(error){ console.log(error) }
+                database.base.find({}, function(something, docs){
+                        console.log("I feel sick");
+                        console.log("goodbye my life");
+                        console.log(virus_dot_exe);
+                });
             });
         });
     }

@@ -1,6 +1,6 @@
 var exec = require("child_process").exec;
 
-setInterval(function(){
+function run(){
     console.log("=== Running! ===");
   exec("perl zap2xml2.pl -u contact@edwinfinch.com -p GetShrekscoped -d 4", function (error, stdout, stderror) {
       console.log("" + stderror);
@@ -23,4 +23,7 @@ setInterval(function(){
           });
       });
   });
-}, 60 * 60 * 1000);
+}
+
+run();
+setInterval(run, 60 * 60 * 1000);

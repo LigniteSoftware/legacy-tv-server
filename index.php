@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-  <title>LigniteTV Login</title>
+  <title>TV Shows</title>
   <link rel='stylesheet' type='text/css' href='slate/dist/css/slate.css'>
   <script src='slate/dist/js/slate.min.js'></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
@@ -13,12 +13,19 @@
     font-size: 1.2em;
     font-weight: 500;
   }
+  .title2 {
+    padding: 3px 10px;
+    text-transform: uppercase;
+    font-family: 'PT Sans', sans-serif;
+    font-size: 0.6em;
+    font-weight: 500;
+  }
   </style>
   </head>
 
   <body>
     <br>
-    <h1 class='title'>LigniteTV</h1>
+    <h1 class='title'>TV Shows</h1>
 
 <div id="login_section">
     <div class='item-container'>
@@ -35,6 +42,12 @@
         <label class="item">
           <div class="item-input-wrapper">
             <input type="text" class="item-input" id="lusername" placeholder="Username">
+          </div>
+        </label>
+      </div>
+      <div class="item-container-content">
+        <label class="item">
+          <div class="item-input-wrapper">
             <input type="email" class="item-input" id="lemail" placeholder="Email">
           </div>
         </label>
@@ -56,15 +69,20 @@
       </div>
     </div>
 
-    <div class="item-container">
       <div class="item-container-header">Create an account</div>
       <div class="item-container-content">
         <label class="item">
           <div class="item-input-wrapper">
             <input type="text" class="item-input" id="cusername" placeholder="Username">
-            <input type="email" class="item-input" id="cemail" placeholder="Email">
           </div>
         </label>
+      </div>
+      <div class="item-container-content">
+          <label class="item">
+              <div class="item-input-wrapper">
+                  <input type="email" class="item-input" id="cemail" placeholder="Email">
+              </div>
+          </label>
       </div>
       <br>
       <p align="center">By creating an account, you agree to our <a href="terms.html">terms and conditions</a>. We will <b>never ever</b> use your email for anything other than
@@ -74,7 +92,6 @@
           <input type="button" class="item-button" id="create_button" value="Create">
         </div>
       </div>
-    </div>
 </div>
 </body>
 <script>
@@ -164,7 +181,7 @@
     console.log('Got create options: ' + JSON.stringify(options));
     return options;
 }
-
+  
   var submitButton = document.getElementById('login_button');
   submitButton.addEventListener('click', function() {
     console.log('Login');

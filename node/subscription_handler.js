@@ -20,12 +20,12 @@ app.post('/', function (req, res) {
         }
         var post = qs.parse(data);
         var database = mongo('tv', ['users', 'user_shows']);
-        var usernameSent = post.username, accessTokenSent = post.accessToken, showSent = post.show, subscribing = (post.subscribe == "true");
+        var usernameSent = post.username, accessTokenSent = post.accessToken, showSent = post.show, subscribing = (post.subscribe == "true"), channelSent = post.channel;
 
         database.users.find({ username:usernameSent, accessToken:accessTokenSent }, function(error, docs){
             if(docs[0]){
                 if(subscribing){
-                    database.user_shows.insert({ username:usernameSent, accessToken:accessTokenSent, show:showSent }, function(error, docs){
+                    database.user_shows.insert({ username:usernameSent, accessToken:accessTokenSent, show:showSent, channelName:channelSent }, function(error, docs){
                         if(error){
                             res.writeHead(500);
                             res.end(JSON.stringify({

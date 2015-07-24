@@ -12,7 +12,7 @@ app.get('/', function (req, res) {
 });
 
 var timeline = new Timeline({
-  apiKey: 'SBz0h725s5b3nrumo3jf4tfez3dr7i57'
+  apiKey: 'azhvjum2kg0sj0grai7dov7ixoyg4ov7'
 });
 
 function replaceAll(find, replace, str) {
@@ -36,8 +36,6 @@ function constructLengthFromShow(show){
     var newEndString = endString.substring(0, 4) + "/" + endString.substring(4, 6) + "/" + endString.substring(6, 8) + " " + endString.substring(8, 10) + ":" + endString.substring(10, 12);
     var end = new Date(newEndString);
 
-    console.log("start: " + start + " and end: " + end);
-
     var msecondsDifference = end.getTime()-start.getTime();
     var duration = msecondsDifference/1000/60;
 
@@ -51,34 +49,48 @@ function getStartFromShow(show){
     return start;
 }
 
-var database = mongo('tv', ['base']);
+var database = mongo('tv', ['base', 'user_shows']);
 var shows;
 var currentShow = 0, startTime = 0;
 
-database.base.aggregate({$unwind : "$programme"},     {$match : {  } },    {$group : { "_id" : "$_id" , "programme" : { $push: "$programme" } } }, function(something, docs){
-    shows = docs[0].programme;
-    console.log("Amount of shows: " + shows.length);
-    var show = shows[0];
-    console.log("show: " + JSON.stringify(show));
-    console.log(constructIDFromShow(show));
-    console.log(constructLengthFromShow(show));
-
-    pushNextShow();
-});
+function run(){
+    currentShow = 0;
+    shows = null;
+    database.base.aggregate({$unwind : "$programme"},     {$match : {  } },    {$group : { "_id" : "$_id" , "programme" : { $push: "$programme" } } }, function(something, docs){
+        shows = docs[0].programme;
+        console.log("Amount of shows: " + shows.length);
+        pushNextShow();
+    });
+}
 
 function pushNextShow(){
-
     var d = new Date();
     startTime = d.getTime();
-    if(currentShow < 5){
-        pushShow(shows[currentShow]);
+    if(currentShow < shows.length){
+        var lockedShow = currentShow;
+        database.user_shows.find({ show:shows[lockedShow].title }, function(error, adocs){
+            if(adocs[0]){
+                for(var i = 0; i < adocs.length; i++){
+                    var channel = adocs[i].channelName;
+                    console.log("Pushing " + shows[lockedShow].title + " (channel: " + channel + ")");
+                    pushShow(shows[lockedShow], channel);
+                }
+            }
+            else{
+                pushNextShow();
+            }
+        });
     }
     currentShow++;
 }
 
+function replaceAll(find, replace, str) {
+  return str.replace(new RegExp(find, 'g'), replace);
+}
+
 // handler for GET /senduserpin/:userToken/:minutesToAdd?
 //app.get('/senduserpin/', function (req, res) {
-function pushShow(currentShow){
+function pushShow(currentShow, channel){
   // create the pin object
   var id = constructIDFromShow(currentShow);
   var start = getStartFromShow(currentShow);
@@ -86,7 +98,6 @@ function pushShow(currentShow){
   var type = "calendarPin";
   var icon = "system://images/TV_SHOW";
   var title = currentShow.title;
-  var channel = currentShow.attributes.channel;
 
   var jsonPin = {
      id: id,
@@ -100,9 +111,15 @@ function pushShow(currentShow){
         title: title,
       }
   };
+  console.log("Sending " + JSON.stringify(jsonPin));
   var pin = new Timeline.Pin(jsonPin);
 
-  var topic = [title];
+  var fixtitle = title;
+  fixtitle = replaceAll(" ", "", fixtitle);
+  fixtitle = fixtitle.substring(0, 22);
+  fixtitle += "__" + channel;
+  console.log(fixtitle);
+  var topic = [fixtitle];
   timeline.sendSharedPin(topic, pin, function (err, body, resp) {
     if (err) {
         pushNextShow();
@@ -111,10 +128,17 @@ function pushShow(currentShow){
     }
     var d = new Date();
     var endTime = d.getTime();
-    console.log("Completed in " + (endTime-startTime) + " milliseconds.");
+    console.log("(Success!) Completed in " + (endTime-startTime) + " milliseconds.");
     pushNextShow();
   });
 }
+
+run();
+
+setInterval(function(){
+    console.log("Autorunning.");
+    run();
+}, 10 * 60 * 1000);
 //});
 /*
  * Depreciated shit I don't want to lose
